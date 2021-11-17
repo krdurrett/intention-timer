@@ -21,7 +21,7 @@ On the landing page the user can set a goal for three categories: study, meditat
 ## Setup
 This app can be accessed with this GitHub Pages link:
 
-[GitHub test site](https://aliroemhildt.github.io/intention-timer/)
+[GitHub deployed site](https://krdurrett.github.io/intention-timer/)
 
 This app can also be accessed through the following steps:
 
