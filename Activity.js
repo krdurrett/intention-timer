@@ -10,7 +10,7 @@ class Activity {
 
   startTimer(renderRemainingTime, onDone) {
     this.startTime = Date.now();
-    function everyInterval() {
+    let everyInterval = () => {
       var currentTime = Date.now();
       var elapsedTime = currentTime - this.startTime;
       var overAllDuration = (this.minutes * 60 + this.seconds) * 1000;

@@ -32,43 +32,16 @@ var errorMessages = document.querySelectorAll(".error-message");
 var currentActivity;
 var savedActivities = [];
 
-// EVENT LISTENERS
-studyButton.addEventListener("click", function() {
-  setCategory("study")
-});
-
-meditateButton.addEventListener("click", function() {
-  setCategory("meditate")
-});
-
-exerciseButton.addEventListener("click", function() {
-  setCategory("exercise")
-});
-
-startActivityButton.addEventListener("click", function(event) {
-  event.preventDefault();
-  startActivity();
-});
-
-startCompleteButton.addEventListener("click", callStartTimer);
-
-logActivityButton.addEventListener("click", logActivity);
-
-createNewActivityButton.addEventListener("click", returnHome);
-
-window.addEventListener("load", displayActivityCards);
-
 // FUNCTIONS
-function getActivatedCategory() {
+let getActivatedCategory = () => {
   var categoryElement = document.querySelector(".activated-category");
   if (!categoryElement) {
     return "";
   };
-
   return categoryElement.id;
-};
+}
 
-function returnHome() {
+let returnHome = () => {
   addHidden(completedViewPage);
   removeHidden(chooseCatViewPage);
   deactivateCategory(getActivatedCategory());
@@ -76,68 +49,66 @@ function returnHome() {
   pageTitle.innerText = "New Activity";
   clearInputs();
   clearErrorMessages();
-  };
+}
 
-function clearInputs() {
-  for (i = 0; i < inputs.length; i ++) {
-    inputs[i].value = null;
-  };
-};
+let clearInputs = () => {
+  inputs.forEach(item => {
+    item.value = null;
+  })
+}
 
-  function clearErrorMessages() {
-    for (i = 0; i < errorMessages.length; i++){
-      addErrorHidden(errorMessages[i]);
-    };
-  };
+let clearErrorMessages = () => {
+  errorMessages.forEach(message => {
+    addErrorHidden(message);
+  })
+}
 
-function logActivity() {
+let logActivity = () => {
   addHidden(timerViewPage);
   addHidden(noActivitiesText);
   removeHidden(completedViewPage);
   pageTitle.innerText = "Completed Activity";
   currentActivity.saveToStorage();
   displayActivityCards();
-};
+}
 
-function createCardCategory(category) {
-  return category.charAt(0).toUpperCase() + category.substr(1);
-};
+let createCardCategory = category =>
+  category.charAt(0).toUpperCase() + category.substr(1);
 
-function displayActivityCards() {
+
+let displayActivityCards = () => {
   activityCardSection.innerHTML = ``;
   savedActivities = [];
   getStoredActivities();
   sortList(savedActivities);
-  for (var i = 0; i < savedActivities.length; i++) {
-    addToActivityList(savedActivities[i]);
-  };
-
+  savedActivities.forEach(activity => {
+     addToActivityList(activity);
+  })
   if (savedActivities.length > 0) {
     addHidden(noActivitiesText);
-  };
-};
+  }
+}
 
-function getStoredActivities() {
+let getStoredActivities = () => {
   for (var i = 0; i < localStorage.length; i++) {
     if (localStorage.key(i).includes("activity")) {
       var stringifiedActivity = localStorage.getItem(`${localStorage.key(i)}`);
       var parsedActivity = JSON.parse(stringifiedActivity);
       savedActivities.push(parsedActivity);
-    };
-  };
-};
+    }
+  }
+}
 
-function sortList(list) {
-  for (i = 0; i < savedActivities.length;i++){
-    savedActivities[i].id = savedActivities[i].id.substring(8);
-  };
-
+let sortList = list => {
+  savedActivities.forEach(activity => {
+    activity.id = activity.id.substring(8)
+  })
   savedActivities = savedActivities.sort(function(a, b) {
     return b.id - a.id;
-  });
-};
+  })
+}
 
-function addToActivityList(activity) {
+let addToActivityList = activity => {
   activityCardSection.innerHTML += `
   <div class="activity-card">
     <div class="activity-details">
@@ -153,58 +124,60 @@ function addToActivityList(activity) {
   `;
   var activityCardIcon = document.getElementById(`${activity.id}`);
   activityCardIcon.classList.add(`${activity.category}-box`);
-};
+}
 
-function setCategory(selectedCategory) {
+let setCategory = selectedCategory => {
   var currentActivatedCategory = getActivatedCategory();
   if (currentActivatedCategory) {
     deactivateCategory(currentActivatedCategory);
-  };
-
+  }
   activateCategory(selectedCategory);
-};
+}
 
-function getCategoryElements(category) {
-  if (category === "study") {
-    return {button: studyButton, image: studyImage};
-  } else if (category === "meditate") {
-    return {button: meditateButton, image: meditateImage};
-  } else if (category === "exercise") {
-    return {button: exerciseButton, image: exerciseImage};
-  };
-};
+let getCategoryElements = category => {
+  switch(true) {
+    case category === "study":
+      return {button: studyButton, image: studyImage};
+      break;
+    case category === "meditate":
+      return {button: meditateButton, image: meditateImage};
+      break;
+    case category === "exercise":
+      return {button: exerciseButton, image: exerciseImage};
+  }
+}
 
-function deactivateCategory(category) {
+let deactivateCategory = category => {
   var currCategory = getCategoryElements(category);
   currCategory.button.classList.remove(`${category}-button-clicked`);
   currCategory.button.classList.remove("activated-category");
   currCategory.image.src = `assets/${category}.svg`;
-};
+}
 
-function activateCategory(category) {
+let activateCategory = category => {
   var currCategory = getCategoryElements(category);
   currCategory.button.classList.add(`${category}-button-clicked`);
   currCategory.button.classList.add("activated-category");
   currCategory.image.src = `assets/${category}-active.svg`;
-};
+}
 
-function addHidden(element) {
+let addHidden = element => {
   element.classList.add("hidden");
-};
+}
 
-function addErrorHidden(element) {
+let addErrorHidden = element => {
   element.classList.add("error-hidden");
-};
+}
 
-function removeHidden(element) {
+let removeHidden = element => {
   element.classList.remove("hidden");
-};
+}
 
-function removeErrorHidden(element) {
+let removeErrorHidden = element => {
   element.classList.remove("error-hidden");
-};
+}
 
-function startActivity() {
+let startActivity = () => {
   if (getActivatedCategory() && goalInput.value && minsInput.value && secsInput.value) {
     addHidden(chooseCatViewPage);
     removeHidden(timerViewPage);
@@ -218,49 +191,74 @@ function startActivity() {
     startCompleteButton.disabled = false;
   } else {
     showInputError();
-  };
-};
+  }
+}
 
-function showInputError() {
+let showInputError = () => {
   var inputElements = [goalInput, minsInput, secsInput];
   var errorElements = [goalError, minutesError, secondsError];
-  for (var i = 0; i < inputElements.length; i++) {
-    if (!inputElements[i].value) {
-      removeErrorHidden(errorElements[i]);
+  inputElements.forEach(input => {
+    if (!input.value) {
+      removeErrorHidden(errorElements[inputElements.indexOf(input)]);
     } else {
-      addErrorHidden(errorElements[i])
+      addErrorHidden(errorElements[inputElements.indexOf(input)])
     }
-  };
-
+  })
   if (!getActivatedCategory()) {
     removeErrorHidden(buttonError);
   } else {
     addErrorHidden(buttonError);
-  };
-};
+  }
+}
 
-function changeButtonBorder() {
+let changeButtonBorder = () => {
   var activity = currentActivity.category;
   startCompleteButton.classList.add(`${activity}-border`);
-};
+}
 
-function changeActivityCardColor() {
+let changeActivityCardColor = () => {
   var activity = currentActivity.category;
-};
+}
 
-function callStartTimer() {
+let callStartTimer = () => {
   var startTime = Date.now();
   currentActivity.startTimer(renderTimer, onTimerComplete);
   startCompleteButton.disabled = true;
   startCompleteButton.innerText = "";
-};
+}
 
-function onTimerComplete() {
+let onTimerComplete = () => {
   startCompleteButton.innerText = "COMPLETE!";
   removeHidden(logActivityButton);
   currentActivity.markComplete();
-};
+}
 
-function renderTimer(minutes, seconds) {
+let renderTimer = (minutes, seconds) => {
   timerText.innerText = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-};
+}
+
+// EVENT LISTENERS
+studyButton.addEventListener("click", () => {
+  setCategory("study")
+})
+
+meditateButton.addEventListener("click", () => {
+  setCategory("meditate")
+})
+
+exerciseButton.addEventListener("click", () => {
+  setCategory("exercise")
+})
+
+startActivityButton.addEventListener("click", event => {
+  event.preventDefault();
+  startActivity();
+})
+
+startCompleteButton.addEventListener("click", callStartTimer);
+
+logActivityButton.addEventListener("click", logActivity);
+
+createNewActivityButton.addEventListener("click", returnHome);
+
+window.addEventListener("load", displayActivityCards);
